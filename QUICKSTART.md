@@ -85,7 +85,7 @@ npm run dev
 
 ## Important Files
 
-- `firebase-credentials.json` - Your Firebase service account (keep secure!)
+- `.env.local` - Your Firebase Admin environment variables (keep secure!)
 - `app/api/collections/` - API endpoints for CRUD operations
 - `components/` - Reusable UI components
 - `lib/` - Firebase config and utilities

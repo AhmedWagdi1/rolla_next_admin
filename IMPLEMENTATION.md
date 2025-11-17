@@ -22,8 +22,8 @@
 
 ### 4. Firebase Admin Configuration ✓
 - Created `lib/firebase-admin.ts` with proper initialization
-- Configured secure credential handling
-- Added firebase-credentials.json to .gitignore
+- Configured secure credential handling via environment variables (no JSON file committed)
+- Added `.env.example` with required variables
 
 ### 5. CRUD API Endpoints ✓
 - **GET** `/api/collections/[collection]` - List all documents
@@ -116,7 +116,7 @@ rolla_next_admin/
 │   ├── collections.ts                       # Collection metadata
 │   ├── theme.ts                             # MUI theme config
 │   └── MUIProvider.tsx                      # Theme provider
-├── firebase-credentials.json                # Service account (gitignored)
+├── .env.example                             # Example env vars (no secrets)
 ├── package.json                             # Dependencies
 ├── tsconfig.json                            # TypeScript config
 └── README.md                                # Documentation
@@ -170,7 +170,7 @@ rolla_next_admin/
 ### Security
 - Server-side Firebase Admin SDK only
 - No client-side credential exposure
-- firebase-credentials.json gitignored
+- Credentials provided via environment variables (never committed)
 - API routes properly scoped
 
 ## 📊 Supported Collections (17 Total)

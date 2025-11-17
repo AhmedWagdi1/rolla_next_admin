@@ -74,7 +74,11 @@ To learn more about Next.js, take a look at the following resources:
 npm install
 ```
 
-2. Ensure `firebase-credentials.json` is in the root directory
+2. Create a `.env.local` file (or set Vercel Project Environment Variables) with:
+  - `FIREBASE_PROJECT_ID`
+  - `FIREBASE_CLIENT_EMAIL`
+  - `FIREBASE_PRIVATE_KEY` (use escaped newlines `\n`)
+  - `FIREBASE_STORAGE_BUCKET` (optional)
 
 3. Start the development server:
 ```bash
@@ -106,8 +110,8 @@ npm run dev
 
 ## Security
 
-⚠️ **Important**: 
-- `firebase-credentials.json` is gitignored
+⚠️ **Important**:
+- Secrets are provided via environment variables; never commit credentials
 - Implement authentication before production deployment
 - Server-side only access using Firebase Admin SDK
 
