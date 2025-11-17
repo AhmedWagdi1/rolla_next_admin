@@ -16,7 +16,6 @@ import {
   Select,
   FormControl,
   InputLabel,
-  Grid,
   FormControlLabel,
   Switch,
 } from '@mui/material';
@@ -480,293 +479,247 @@ export default function ProjectsCollectionView() {
           {editingDoc ? 'Edit Project' : 'Add New Project'}
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ pt: 2 }}>
-            <Grid container spacing={3}>
+          <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2.5 }}>
               
-              {/* Title */}
-              <Grid item xs={12}>
-                <TextField
-                  label="Title *"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  fullWidth
-                  required
-                />
-              </Grid>
+            {/* Title */}
+            <TextField
+              label="Title *"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              fullWidth
+              required
+            />
 
-              {/* Property Type */}
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Property Type</InputLabel>
-                  <Select
-                    value={formData.property_type}
-                    onChange={(e) => setFormData({ ...formData, property_type: e.target.value })}
-                    label="Property Type"
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
+            {/* Property Type and Finishing Type */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel>Property Type</InputLabel>
+                <Select
+                  value={formData.property_type}
+                  onChange={(e) => setFormData({ ...formData, property_type: e.target.value })}
+                  label="Property Type"
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {propertyTypes.map((type) => (
+                    <MenuItem key={type.id} value={type.id}>
+                      {getDisplayName(type)}
                     </MenuItem>
-                    {propertyTypes.map((type) => (
-                      <MenuItem key={type.id} value={type.id}>
-                        {getDisplayName(type)}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+                  ))}
+                </Select>
+              </FormControl>
 
-              {/* Finishing Type */}
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Finishing Type</InputLabel>
-                  <Select
-                    value={formData.finishing_type}
-                    onChange={(e) => setFormData({ ...formData, finishing_type: e.target.value })}
-                    label="Finishing Type"
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
+              <FormControl fullWidth>
+                <InputLabel>Finishing Type</InputLabel>
+                <Select
+                  value={formData.finishing_type}
+                  onChange={(e) => setFormData({ ...formData, finishing_type: e.target.value })}
+                  label="Finishing Type"
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {finishingTypes.map((type) => (
+                    <MenuItem key={type.id} value={type.id}>
+                      {getDisplayName(type)}
                     </MenuItem>
-                    {finishingTypes.map((type) => (
-                      <MenuItem key={type.id} value={type.id}>
-                        {getDisplayName(type)}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
 
-              {/* Category */}
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Category</InputLabel>
-                  <Select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    label="Category"
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
+            {/* Category and Supplier */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel>Category</InputLabel>
+                <Select
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  label="Category"
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {categories.map((cat) => (
+                    <MenuItem key={cat.id} value={cat.id}>
+                      {getDisplayName(cat)}
                     </MenuItem>
-                    {categories.map((cat) => (
-                      <MenuItem key={cat.id} value={cat.id}>
-                        {getDisplayName(cat)}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+                  ))}
+                </Select>
+              </FormControl>
 
-              {/* Supplier */}
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Supplier</InputLabel>
-                  <Select
-                    value={formData.supplier}
-                    onChange={(e) => {
-                      const supplierId = e.target.value;
-                      setFormData({ 
-                        ...formData, 
-                        supplier: supplierId,
-                        supplier_id: supplierId // Keep them in sync
-                      });
-                    }}
-                    label="Supplier"
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
+              <FormControl fullWidth>
+                <InputLabel>Supplier</InputLabel>
+                <Select
+                  value={formData.supplier}
+                  onChange={(e) => {
+                    const supplierId = e.target.value;
+                    setFormData({ 
+                      ...formData, 
+                      supplier: supplierId,
+                      supplier_id: supplierId
+                    });
+                  }}
+                  label="Supplier"
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {suppliers.map((sup) => (
+                    <MenuItem key={sup.id} value={sup.id}>
+                      {getDisplayName(sup)}
                     </MenuItem>
-                    {suppliers.map((sup) => (
-                      <MenuItem key={sup.id} value={sup.id}>
-                        {getDisplayName(sup)}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
 
-              {/* Location */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Location"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  fullWidth
-                />
-              </Grid>
+            {/* Location and Space */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Location"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                fullWidth
+              />
+              <TextField
+                label="Space (sqm)"
+                value={formData.space}
+                onChange={(e) => setFormData({ ...formData, space: e.target.value })}
+                fullWidth
+              />
+            </Box>
 
-              {/* Space */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Space (sqm)"
-                  value={formData.space}
-                  onChange={(e) => setFormData({ ...formData, space: e.target.value })}
-                  fullWidth
-                />
-              </Grid>
+            {/* Duration and Budget */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Duration"
+                value={formData.duration}
+                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                fullWidth
+              />
+              <TextField
+                label="Budget"
+                value={formData.budget}
+                onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                fullWidth
+              />
+            </Box>
 
-              {/* Duration */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Duration"
-                  value={formData.duration}
-                  onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                  fullWidth
-                />
-              </Grid>
+            {/* Design 3D and Floor Height */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel>Design 3D</InputLabel>
+                <Select
+                  value={formData.design_3d}
+                  onChange={(e) => setFormData({ ...formData, design_3d: e.target.value })}
+                  label="Design 3D"
+                >
+                  <MenuItem value="yes">Yes</MenuItem>
+                  <MenuItem value="no">No</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                label="Floor Height"
+                value={formData.floor_height}
+                onChange={(e) => setFormData({ ...formData, floor_height: e.target.value })}
+                fullWidth
+              />
+            </Box>
 
-              {/* Budget */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Budget"
-                  value={formData.budget}
-                  onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                  fullWidth
-                />
-              </Grid>
+            {/* Room Counts */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Floors"
+                type="number"
+                value={formData.number_of_floors}
+                onChange={(e) => setFormData({ ...formData, number_of_floors: parseInt(e.target.value) || 1 })}
+                fullWidth
+              />
+              <TextField
+                label="Reception"
+                type="number"
+                value={formData.reception}
+                onChange={(e) => setFormData({ ...formData, reception: parseInt(e.target.value) || 0 })}
+                fullWidth
+              />
+              <TextField
+                label="Bedrooms"
+                type="number"
+                value={formData.bedrooms}
+                onChange={(e) => setFormData({ ...formData, bedrooms: parseInt(e.target.value) || 0 })}
+                fullWidth
+              />
+              <TextField
+                label="Bathrooms"
+                type="number"
+                value={formData.bathrooms}
+                onChange={(e) => setFormData({ ...formData, bathrooms: parseInt(e.target.value) || 0 })}
+                fullWidth
+              />
+            </Box>
 
-              {/* Design 3D */}
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Design 3D</InputLabel>
-                  <Select
-                    value={formData.design_3d}
-                    onChange={(e) => setFormData({ ...formData, design_3d: e.target.value })}
-                    label="Design 3D"
-                  >
-                    <MenuItem value="yes">Yes</MenuItem>
-                    <MenuItem value="no">No</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
+            {/* Kitchen and Rating */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Kitchen"
+                type="number"
+                value={formData.kitchen}
+                onChange={(e) => setFormData({ ...formData, kitchen: parseInt(e.target.value) || 0 })}
+                fullWidth
+              />
+              <TextField
+                label="Rating"
+                type="number"
+                value={formData.rating}
+                onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) || 0 })}
+                fullWidth
+                inputProps={{ min: 0, max: 5 }}
+              />
+            </Box>
 
-              {/* Floor Height */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Floor Height"
-                  value={formData.floor_height}
-                  onChange={(e) => setFormData({ ...formData, floor_height: e.target.value })}
-                  fullWidth
-                />
-              </Grid>
+            {/* Toggles */}
+            <Box sx={{ display: 'flex', gap: 3 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.checked_by_admins}
+                    onChange={(e) => setFormData({ ...formData, checked_by_admins: e.target.checked })}
+                  />
+                }
+                label="Checked by Admins"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.need_design}
+                    onChange={(e) => setFormData({ ...formData, need_design: e.target.checked })}
+                  />
+                }
+                label="Need Design"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.design_only_needed}
+                    onChange={(e) => setFormData({ ...formData, design_only_needed: e.target.checked })}
+                  />
+                }
+                label="Design Only Needed"
+              />
+            </Box>
 
-              {/* Number of Floors */}
-              <Grid item xs={12} sm={3}>
-                <TextField
-                  label="Floors"
-                  type="number"
-                  value={formData.number_of_floors}
-                  onChange={(e) => setFormData({ ...formData, number_of_floors: parseInt(e.target.value) || 1 })}
-                  fullWidth
-                />
-              </Grid>
+            {/* Description */}
+            <TextField
+              label="Description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              fullWidth
+              multiline
+              rows={4}
+            />
 
-              {/* Reception */}
-              <Grid item xs={12} sm={3}>
-                <TextField
-                  label="Reception"
-                  type="number"
-                  value={formData.reception}
-                  onChange={(e) => setFormData({ ...formData, reception: parseInt(e.target.value) || 0 })}
-                  fullWidth
-                />
-              </Grid>
-
-              {/* Bedrooms */}
-              <Grid item xs={12} sm={3}>
-                <TextField
-                  label="Bedrooms"
-                  type="number"
-                  value={formData.bedrooms}
-                  onChange={(e) => setFormData({ ...formData, bedrooms: parseInt(e.target.value) || 0 })}
-                  fullWidth
-                />
-              </Grid>
-
-              {/* Bathrooms */}
-              <Grid item xs={12} sm={3}>
-                <TextField
-                  label="Bathrooms"
-                  type="number"
-                  value={formData.bathrooms}
-                  onChange={(e) => setFormData({ ...formData, bathrooms: parseInt(e.target.value) || 0 })}
-                  fullWidth
-                />
-              </Grid>
-
-              {/* Kitchen */}
-              <Grid item xs={12} sm={3}>
-                <TextField
-                  label="Kitchen"
-                  type="number"
-                  value={formData.kitchen}
-                  onChange={(e) => setFormData({ ...formData, kitchen: parseInt(e.target.value) || 0 })}
-                  fullWidth
-                />
-              </Grid>
-
-              {/* Rating */}
-              <Grid item xs={12} sm={3}>
-                <TextField
-                  label="Rating"
-                  type="number"
-                  value={formData.rating}
-                  onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) || 0 })}
-                  fullWidth
-                  inputProps={{ min: 0, max: 5 }}
-                />
-              </Grid>
-
-              {/* Toggles */}
-              <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formData.checked_by_admins}
-                      onChange={(e) => setFormData({ ...formData, checked_by_admins: e.target.checked })}
-                    />
-                  }
-                  label="Checked by Admins"
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formData.need_design}
-                      onChange={(e) => setFormData({ ...formData, need_design: e.target.checked })}
-                    />
-                  }
-                  label="Need Design"
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formData.design_only_needed}
-                      onChange={(e) => setFormData({ ...formData, design_only_needed: e.target.checked })}
-                    />
-                  }
-                  label="Design Only Needed"
-                />
-              </Grid>
-
-              {/* Description */}
-              <Grid item xs={12}>
-                <TextField
-                  label="Description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  fullWidth
-                  multiline
-                  rows={4}
-                />
-              </Grid>
-
-            </Grid>
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: 2.5 }}>
