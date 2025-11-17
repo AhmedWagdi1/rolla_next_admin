@@ -1,10 +1,14 @@
 import * as admin from 'firebase-admin';
 
 // Read service account fields from environment variables
-// Note: FIREBASE_PRIVATE_KEY should have newlines escaped ("\\n"); we unescape below
 const projectId = process.env.FIREBASE_PROJECT_ID;
 const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-const privateKey = (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+// Handle private key: Vercel may provide it with literal \n or actual newlines
+// Replace literal backslash-n with actual newlines, then normalize any existing newlines
+const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY || '';
+const privateKey = privateKeyRaw.includes('\\n') 
+  ? privateKeyRaw.replace(/\\n/g, '\n')
+  : privateKeyRaw;
 const storageBucket = process.env.FIREBASE_STORAGE_BUCKET || 'rolla-q4037s.appspot.com';
 
 if (!admin.apps.length) {
