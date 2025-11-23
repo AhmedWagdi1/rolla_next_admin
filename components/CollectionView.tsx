@@ -183,10 +183,18 @@ export default function CollectionView({ collectionName }: CollectionViewProps) 
       
       const method = editingDoc ? 'PUT' : 'POST';
       
+      const dataToSend: Record<string, unknown> = { ...formData };
+      // Remove 'id' if present, as it's not part of the document data
+      delete dataToSend.id;
+
+      // 'createdAt' should always be set by the server, not sent from the client
+      delete dataToSend.createdAt;
+      delete dataToSend.updatedAt; // 'updatedAt' will be set by the server
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
       
       const result = await response.json();
@@ -279,6 +287,10 @@ export default function CollectionView({ collectionName }: CollectionViewProps) 
                   value={formData[col.field] || ''}
                   onChange={(e) => setFormData({ ...formData, [col.field]: e.target.value })}
                   fullWidth
+                  InputProps={{
+                    readOnly: col.field === 'createdAt' || col.field === 'updatedAt',
+                  }}
+                  disabled={col.field === 'createdAt' || col.field === 'updatedAt'} // Optionally disable
                 />
               ))}
           </Box>
