@@ -17,7 +17,8 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import ClientDataGrid from './ClientDataGrid';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import JsonViewer from './JsonViewer';
 
@@ -143,10 +144,7 @@ export default function CitiesCollectionView() {
 
       // Add gover as a reference if selected
       if (formData.gover) {
-        dataToSend.gover = {
-          _type: 'reference',
-          _path: `governorates/${formData.gover}`
-        };
+        dataToSend.gover = formData.gover;
       }
 
       const response = await fetch(url, {
@@ -187,10 +185,9 @@ export default function CitiesCollectionView() {
       headerName: 'Governorate', 
       width: 200,
       renderCell: (params: GridRenderCellParams) => {
-        const gover = params.value as CityDocument['gover'];
-        if (!gover?.id) return '—';
-        const governorate = governorates.find(g => g.id === gover.id);
-        return governorate ? (governorate.name_en || governorate.name_ar || gover.id) : gover.id;
+        const gover = params.value as GovernorateDocument;
+        if (!gover) return '—';
+        return gover.name_en || gover.name_ar || gover.id;
       }
     },
     {
@@ -245,7 +242,7 @@ export default function CitiesCollectionView() {
       )}
 
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <DataGrid
+        <ClientDataGrid
           rows={documents}
           columns={columns}
           loading={loading}

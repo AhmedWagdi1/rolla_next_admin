@@ -1,31 +1,17 @@
 import * as admin from 'firebase-admin';
+import credentials from '../firebase-credentials.json';
 
-// Read service account fields from environment variables
-const projectId = process.env.FIREBASE_PROJECT_ID;
-const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-// Handle private key: Vercel may provide it with literal \n or actual newlines
-// Replace literal backslash-n with actual newlines, then normalize any existing newlines
-const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY || '';
-const privateKey = privateKeyRaw.includes('\\n') 
-  ? privateKeyRaw.replace(/\\n/g, '\n')
-  : privateKeyRaw;
-const storageBucket = process.env.FIREBASE_STORAGE_BUCKET || 'rolla-q4037s.appspot.com';
-
+// Only initialize once
 if (!admin.apps.length) {
-  if (!projectId || !clientEmail || !privateKey) {
-    throw new Error(
-      'Missing Firebase Admin env vars. Please set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY.'
-    );
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert(credentials),
+      storageBucket: process.env.FIREBASE_STORAGE_BUCKET?.trim() || 'rolla-q4037s.appspot.com',
+    });
+  } catch (e) {
+    console.error('[firebase-admin] Initialization error:', e);
+    throw new Error('Firebase Admin SDK initialization failed.');
   }
-
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId,
-      clientEmail,
-      privateKey,
-    }),
-    storageBucket,
-  });
 }
 
 export const db = admin.firestore();
@@ -38,3 +24,4 @@ export function getBucket() {
 }
 
 export default admin;
+

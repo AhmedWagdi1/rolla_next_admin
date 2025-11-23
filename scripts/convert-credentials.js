@@ -1,36 +1,24 @@
-#!/usr/bin/env node
-
-/**
- * Helper script to convert firebase-credentials.json to escaped env format for Vercel
- * Usage: node scripts/convert-credentials.js
- */
-
 const fs = require('fs');
 const path = require('path');
 
-const credentialsPath = path.join(__dirname, '..', 'firebase-credentials.json');
+const projectId = process.env.FIREBASE_PROJECT_ID;
+const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+const privateKey = process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n');
 
-try {
-  const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
-  
-  console.log('\n=== Copy these values to Vercel Environment Variables ===\n');
-  console.log('FIREBASE_PROJECT_ID');
-  console.log(credentials.project_id);
-  console.log('\nFIREBASE_CLIENT_EMAIL');
-  console.log(credentials.client_email);
-  console.log('\nFIREBASE_PRIVATE_KEY');
-  console.log(credentials.private_key);
-  console.log('\nFIREBASE_STORAGE_BUCKET (optional)');
-  console.log(`${credentials.project_id}.appspot.com`);
-  console.log('\n=== End ===\n');
-  
-  console.log('NOTE: When pasting FIREBASE_PRIVATE_KEY to Vercel:');
-  console.log('  - The key should already have real newlines (\\n characters)');
-  console.log('  - Just paste it as-is into the Vercel environment variable field');
-  console.log('  - Vercel will handle it correctly\n');
-  
-} catch (error) {
-  console.error('Error reading firebase-credentials.json:', error.message);
-  console.log('\nMake sure firebase-credentials.json exists in the project root.');
-  process.exit(1);
-}
+const credentials = {
+  type: 'service_account',
+  project_id: projectId,
+  private_key_id: '',
+  private_key: privateKey,
+  client_email: clientEmail,
+  client_id: '',
+  auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+  token_uri: 'https://oauth2.googleapis.com/token',
+  auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
+  client_x509_cert_url: '',
+};
+
+const outputPath = path.join(__dirname, '..', 'firebase-credentials.json');
+fs.writeFileSync(outputPath, JSON.stringify(credentials, null, 2));
+
+console.log(`Firebase credentials file created at: ${outputPath}`);

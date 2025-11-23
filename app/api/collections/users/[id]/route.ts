@@ -16,9 +16,15 @@ export async function GET(
       );
     }
 
+    const docData = doc.data();
+    if (docData?.created_time) {
+      docData.createdAt = docData.created_time;
+      delete docData.created_time;
+    }
+
     return NextResponse.json({
       success: true,
-      data: { id: doc.id, ...doc.data() },
+      data: { id: doc.id, ...docData },
     });
   } catch (error) {
     console.error('Error fetching document:', error);
@@ -63,8 +69,8 @@ export async function PUT(
           authUpdateData.email = data.email;
         }
 
-        if (data.display_name || data.displayName) {
-          authUpdateData.displayName = data.display_name || data.displayName;
+        if (data.displayName) {
+          authUpdateData.displayName = data.displayName;
         }
 
         if (data.photoURL || data.company_logo) {

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import {
   Box,
   Button,
@@ -26,24 +27,36 @@ import {
   Refresh as RefreshIcon,
   CloudUpload as CloudUploadIcon,
 } from '@mui/icons-material';
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { format } from 'date-fns';
+
+const DataGrid = dynamic(
+  () => import('@mui/x-data-grid').then(mod => mod.DataGrid),
+  {
+    ssr: false,
+    loading: () => (
+      <Box 
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}
+      >
+        <CircularProgress />
+      </Box>
+    ),
+  }
+);
 
 interface UserDocument {
   id?: string;
   uid?: string;
   email: string;
-  display_name?: string;
   displayName?: string;
   is_supplier: boolean;
   company_name?: string;
   company_logo?: string;
   password?: string;
-  createdAt?: string;
-  created_time?: {
+  createdAt?: {
     _seconds: number;
     _nanoseconds: number;
-  };
+  } | string;
   [key: string]: unknown;
 }
 
@@ -58,12 +71,14 @@ export default function UsersCollectionView() {
   // Form state
   const [formData, setFormData] = useState<UserDocument>({
     email: '',
-    display_name: '',
+    displayName: '',
     is_supplier: false,
     company_name: '',
     company_logo: '',
     password: '',
   });
+
+  const hasSuppliers = useMemo(() => documents.some(doc => doc.is_supplier), [documents]);
 
   const columns: GridColDef[] = [
     { 
@@ -80,7 +95,7 @@ export default function UsersCollectionView() {
       width: 250,
     },
     {
-      field: 'display_name',
+      field: 'displayName',
       headerName: 'DISPLAY NAME',
       width: 180,
     },
@@ -96,35 +111,47 @@ export default function UsersCollectionView() {
         />
       )
     },
+    ...(hasSuppliers ? [
+      {
+        field: 'company_name',
+        headerName: 'COMPANY',
+        width: 180,
+        renderCell: (params: GridRenderCellParams) => (
+          <Typography variant="body2">
+            {params.value ? String(params.value) : '-'}
+          </Typography>
+        )
+      },
+      {
+        field: 'company_logo',
+        headerName: 'LOGO',
+        width: 80,
+        renderCell: (params: GridRenderCellParams) => {
+          const url = params.value as string;
+          return url ? (
+            <Avatar src={url} alt="Logo" sx={{ width: 32, height: 32 }} />
+          ) : null;
+        }
+      },
+    ] : []),
     {
-      field: 'company_name',
-      headerName: 'COMPANY',
-      width: 180,
-      renderCell: (params: GridRenderCellParams) => (
-        <Typography variant="body2">
-          {params.value ? String(params.value) : '-'}
-        </Typography>
-      )
-    },
-    {
-      field: 'company_logo',
-      headerName: 'LOGO',
-      width: 80,
-      renderCell: (params: GridRenderCellParams) => {
-        const url = params.value as string;
-        return url ? (
-          <Avatar src={url} alt="Logo" sx={{ width: 32, height: 32 }} />
-        ) : null;
-      }
-    },
-    {
-      field: 'created_time',
+      field: 'createdAt',
       headerName: 'CREATED',
       width: 180,
       renderCell: (params: GridRenderCellParams) => {
-        const time = params.value as { _seconds: number; _nanoseconds: number } | undefined;
-        if (!time || !time._seconds) return '-';
-        return format(new Date(time._seconds * 1000), 'MMM dd, yyyy HH:mm');
+        const time = params.value as { _seconds: number; _nanoseconds: number } | string | undefined;
+        if (!time) return '-';
+        
+        let date: Date;
+        if (typeof time === 'string') {
+          date = new Date(time);
+        } else if (time && typeof time === 'object' && '_seconds' in time) {
+          date = new Date(time._seconds * 1000);
+        } else {
+          return '-';
+        }
+        
+        return format(date, 'MMM dd, yyyy HH:mm');
       }
     },
     {
@@ -180,7 +207,7 @@ export default function UsersCollectionView() {
     setEditingDoc(doc);
     setFormData({
       email: doc.email || '',
-      display_name: doc.display_name || '',
+      displayName: doc.displayName || '',
       is_supplier: doc.is_supplier || false,
       company_name: doc.company_name || '',
       company_logo: doc.company_logo || '',
@@ -271,7 +298,7 @@ export default function UsersCollectionView() {
       // Prepare data to send
       const dataToSend: Record<string, unknown> = {
         email: formData.email,
-        display_name: formData.display_name,
+        displayName: formData.displayName,
         is_supplier: formData.is_supplier,
       };
 
@@ -309,10 +336,11 @@ export default function UsersCollectionView() {
         setEditingDoc(null);
         setFormData({
           email: '',
-          display_name: '',
+          displayName: '',
           is_supplier: false,
           company_name: '',
           company_logo: '',
+          password: '',
         });
         fetchDocuments();
       } else {
@@ -327,10 +355,11 @@ export default function UsersCollectionView() {
     setEditingDoc(null);
     setFormData({
       email: '',
-      display_name: '',
+      displayName: '',
       is_supplier: false,
       company_name: '',
       company_logo: '',
+      password: '',
     });
     setOpenDialog(true);
   };
@@ -340,7 +369,7 @@ export default function UsersCollectionView() {
     setEditingDoc(null);
     setFormData({
       email: '',
-      display_name: '',
+      displayName: '',
       is_supplier: false,
       company_name: '',
       company_logo: '',
@@ -422,8 +451,8 @@ export default function UsersCollectionView() {
             {/* Display Name */}
             <TextField
               label="Display Name"
-              value={formData.display_name}
-              onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
+              value={formData.displayName}
+              onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
               fullWidth
             />
 
@@ -540,3 +569,4 @@ export default function UsersCollectionView() {
     </Box>
   );
 }
+

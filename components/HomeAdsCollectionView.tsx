@@ -14,7 +14,8 @@ import {
   IconButton,
   CircularProgress,
 } from '@mui/material';
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import ClientDataGrid from './ClientDataGrid';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, CloudUpload as CloudUploadIcon } from '@mui/icons-material';
 import JsonViewer from './JsonViewer';
 
@@ -270,7 +271,7 @@ export default function HomeAdsCollectionView() {
       )}
 
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <DataGrid
+        <ClientDataGrid
           rows={documents}
           columns={columns}
           loading={loading}

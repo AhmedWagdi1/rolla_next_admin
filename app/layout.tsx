@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import MUIProvider from "@/lib/MUIProvider";
+import ThemeRegistry from "@/lib/ThemeRegistry";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,12 +25,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <MUIProvider>
-          {children}
-        </MUIProvider>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ThemeRegistry>{children}</ThemeRegistry>
       </body>
     </html>
   );

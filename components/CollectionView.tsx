@@ -21,7 +21,8 @@ import {
   Delete as DeleteIcon,
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import ClientDataGrid from './ClientDataGrid';
 import JsonViewer from './JsonViewer';
 
 interface CollectionViewProps {
@@ -233,7 +234,7 @@ export default function CollectionView({ collectionName }: CollectionViewProps) 
       )}
 
       <Paper sx={{ height: 600, width: '100%' }}>
-        <DataGrid
+        <ClientDataGrid
           rows={documents}
           columns={columns}
           loading={loading}
