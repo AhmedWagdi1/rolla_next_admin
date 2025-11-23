@@ -15,6 +15,7 @@ import {
   Alert,
   Chip,
 } from '@mui/material';
+import { format } from 'date-fns';
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -71,6 +72,12 @@ export default function CollectionView({ collectionName }: CollectionViewProps) 
                 renderCell: (params: GridRenderCellParams) => {
                   const value = params.value;
                   if (typeof value === 'object' && value !== null) {
+                    // Check for Firestore timestamp object
+                    if (value && typeof value === 'object' && '_seconds' in value && '_nanoseconds' in value) {
+                      const date = new Date((value as { _seconds: number })._seconds * 1000);
+                      return <Typography variant="body2">{format(date, 'MMM dd, yyyy HH:mm')}</Typography>;
+                    }
+
                     return (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Typography variant="caption">Object</Typography>
