@@ -109,36 +109,65 @@ export default function ProjectsCollectionView() {
     fetchCategories();
   }, []);
 
-  const fetchDocuments = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch('/api/collections/projects');
-      const result = await response.json();
-      
-      if (result.success) {
-        setDocuments(result.data || []);
-      } else {
-        setError(result.error || 'Failed to fetch documents');
+    const fetchDocuments = async () => {
+
+      setLoading(true);
+
+      setError(null);
+
+      try {
+
+        const response = await fetch('/api/collections/projects');
+
+        const result = await response.json();
+
+        
+
+        if (result.success) {
+
+          setDocuments(result.data || []);
+
+        } else {
+
+          setError(result.error || 'Failed to fetch documents');
+
+        }
+
+      } catch (err) {
+
+        setError('Network error: ' + (err instanceof Error ? err.message : 'Unknown error'));
+
+      } finally {
+
+        setLoading(false);
+
       }
-    } catch (err) {
-      setError('Network error: ' + (err instanceof Error ? err.message : 'Unknown error'));
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const fetchPropertyTypes = async () => {
-    try {
-      const response = await fetch('/api/collections/property_types');
-      const result = await response.json();
-      if (result.success) setPropertyTypes(result.data || []);
-    } catch (err) {
-      console.error('Error fetching property types:', err);
-    }
-  };
+    };
 
-  const fetchFinishingTypes = async () => {
+  
+
+    const fetchPropertyTypes = async () => {
+
+      try {
+
+        const response = await fetch('/api/collections/property_types');
+
+        const result = await response.json();
+
+        if (result.success) setPropertyTypes(result.data || []);
+
+      } catch (err) {
+
+        console.error('Error fetching property types:', err);
+
+      }
+
+    };
+
+  
+
+    const fetchFinishingTypes = async () => {
     try {
       const response = await fetch('/api/collections/finishing_types');
       const result = await response.json();
@@ -288,18 +317,12 @@ export default function ProjectsCollectionView() {
 
       // Add property_type reference if selected
       if (formData.property_type) {
-        dataToSend.property_type = {
-          _type: 'reference',
-          _path: `property_types/${formData.property_type}`
-        };
+        dataToSend.property_type = formData.property_type;
       }
 
       // Add finishing_type reference if selected
       if (formData.finishing_type) {
-        dataToSend.finishing_type = {
-          _type: 'reference',
-          _path: `finishing_types/${formData.finishing_type}`
-        };
+        dataToSend.finishing_type = formData.finishing_type;
       }
 
       // Generate project number for new projects
