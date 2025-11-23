@@ -110,39 +110,24 @@ export default function ProjectsCollectionView() {
   }, []);
 
     const fetchDocuments = async () => {
-
       setLoading(true);
-
       setError(null);
-
       try {
-
         const response = await fetch('/api/collections/projects');
-
         const result = await response.json();
-
         
-
+        console.log('Fetched documents data:', result.data); // Added log
+        
         if (result.success) {
-
           setDocuments(result.data || []);
-
         } else {
-
           setError(result.error || 'Failed to fetch documents');
-
         }
-
       } catch (err) {
-
         setError('Network error: ' + (err instanceof Error ? err.message : 'Unknown error'));
-
       } finally {
-
         setLoading(false);
-
       }
-
     };
 
   
@@ -438,7 +423,10 @@ export default function ProjectsCollectionView() {
           <IconButton
             size="small"
             color="error"
-            onClick={() => handleDelete(params.row.id)}
+            onClick={() => {
+              console.log('Attempting to delete project with ID:', params.row.id); // Reinforced log
+              handleDelete(params.row.id);
+            }}
             title="Delete"
           >
             <DeleteIcon fontSize="small" />

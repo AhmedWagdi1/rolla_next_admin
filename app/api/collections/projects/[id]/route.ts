@@ -46,10 +46,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // Changed params type to Promise
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     await db.collection('projects').doc(id).delete();
 
     return NextResponse.json({ success: true });
