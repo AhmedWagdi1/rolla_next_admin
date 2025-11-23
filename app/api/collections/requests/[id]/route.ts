@@ -9,27 +9,33 @@ export async function PUT(
   try {
     const { id } = params;
     const data = await request.json();
-    const { property_type, finishing_type, ...rest } = data;
+    const { client, acceptedProposal, acceptedSupplier, ...rest } = data;
 
     const docData: Record<string, unknown> = {
       ...rest,
       updatedAt: FieldValue.serverTimestamp(),
     };
 
-    if (property_type && typeof property_type === 'string' && property_type.trim() !== '') {
-      docData.property_type = db.collection('property_types').doc(property_type);
+    if (client) {
+      docData.client = db.collection('users').doc(client);
     } else {
-      docData.property_type = FieldValue.delete();
+      docData.client = FieldValue.delete();
     }
 
-    if (finishing_type && typeof finishing_type === 'string' && finishing_type.trim() !== '') {
-      docData.finishing_type = db.collection('finishing_types').doc(finishing_type);
+    if (acceptedProposal) {
+      docData.acceptedProposal = db.collection('proposals').doc(acceptedProposal);
     } else {
-      docData.finishing_type = FieldValue.delete();
+      docData.acceptedProposal = FieldValue.delete();
     }
 
-    await db.collection('projects').doc(id).update(docData);
-    const doc = await db.collection('projects').doc(id).get();
+    if (acceptedSupplier) {
+      docData.acceptedSupplier = db.collection('users').doc(acceptedSupplier);
+    } else {
+      docData.acceptedSupplier = FieldValue.delete();
+    }
+
+    await db.collection('requests').doc(id).update(docData);
+    const doc = await db.collection('requests').doc(id).get();
 
     return NextResponse.json({
       success: true,
@@ -46,11 +52,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> } // Changed params type to Promise
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
-    await db.collection('projects').doc(id).delete();
+    const { id } = params;
+    await db.collection('requests').doc(id).delete();
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -66,7 +66,6 @@ interface ReferenceCollection {
 
 export default function RequestsCollectionView() {
   const [documents, setDocuments] = useState<RequestDocument[]>([]);
-  const [users, setUsers] = useState<ReferenceCollection[]>([]);
   const [proposals, setProposals] = useState<ReferenceCollection[]>([]);
   const [suppliers, setSuppliers] = useState<ReferenceCollection[]>([]);
   const [loading, setLoading] = useState(false);
@@ -100,7 +99,6 @@ export default function RequestsCollectionView() {
 
   useEffect(() => {
     fetchDocuments();
-    fetchUsers();
     fetchProposals();
     fetchSuppliers();
   }, []);
@@ -121,16 +119,6 @@ export default function RequestsCollectionView() {
       setError('Network error: ' + (err instanceof Error ? err.message : 'Unknown error'));
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch('/api/collections/users');
-      const result = await response.json();
-      if (result.success) setUsers(result.data || []);
-    } catch (err) {
-      console.error('Error fetching users:', err);
     }
   };
 
@@ -271,26 +259,17 @@ export default function RequestsCollectionView() {
 
       // Add client reference if selected
       if (formData.client) {
-        dataToSend.client = {
-          _type: 'reference',
-          _path: `Users/${formData.client}`
-        };
+        dataToSend.client = formData.client;
       }
 
       // Add acceptedProposal reference if selected
       if (formData.acceptedProposal) {
-        dataToSend.acceptedProposal = {
-          _type: 'reference',
-          _path: `proposals/${formData.acceptedProposal}`
-        };
+        dataToSend.acceptedProposal = formData.acceptedProposal;
       }
 
       // Add acceptedSupplier reference if selected
       if (formData.acceptedSupplier) {
-        dataToSend.acceptedSupplier = {
-          _type: 'reference',
-          _path: `Users/${formData.acceptedSupplier}`
-        };
+        dataToSend.acceptedSupplier = formData.acceptedSupplier;
       }
 
       const response = await fetch(url, {
@@ -353,10 +332,9 @@ export default function RequestsCollectionView() {
       headerName: 'Client User', 
       width: 150,
       valueGetter: (value) => {
-        const ref = value as RequestDocument['client'];
-        if (!ref?.id) return '—';
-        const item = users.find(u => u.id === ref.id);
-        return item ? getDisplayName(item) : ref.id;
+        const client = value as ReferenceCollection;
+        if (!client) return '—';
+        return getDisplayName(client);
       }
     },
     { field: 'mobileNumber', headerName: 'Mobile', width: 130 },
@@ -493,11 +471,7 @@ export default function RequestsCollectionView() {
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
-                {users.map((user) => (
-                  <MenuItem key={user.id} value={user.id}>
-                    {getDisplayName(user)}
-                  </MenuItem>
-                ))}
+                {/* Users are populated from the requests themselves */}
               </Select>
             </FormControl>
 
